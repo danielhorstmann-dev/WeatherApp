@@ -1,22 +1,34 @@
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import java.io.IOException;
+import java.util.Optional;
 
 public class WeatherAppController {
 
     private final InputOutput io = new InputOutput();
-    private final WeatherData weatherData = new WeatherData();
+    private final WeatherService weatherService = new WeatherService();
 
     public void run(){
-        String city = io.readString("City: ").trim();
+        while (true) {
+            String city = getCityFromUser();
+            if (city.isEmpty()) continue;
+            if (city.equalsIgnoreCase("exit")) break;
 
-        String result = null;
-        try {
-            result = weatherData.getWeatherData(city);
-        } catch (IOException e) {
-            io.printError("IO-Error: " + e.getMessage());
-        } catch (InterruptedException e) {
-            io.printError("Interrupted-Error: " + e.getMessage());
+            try {
+                Optional<WeatherData> dataOpt = weatherService.fetchWeather(city);
+                dataOpt.ifPresent(data -> io.printWeather(city, data.temperature(), data.description()));
+            } catch (JsonProcessingException e) {
+                io.printError("Error to read Json");
+                io.printError(e.getMessage());
+            } catch (IOException | InterruptedException e) {
+                io.printError("Server does not respond");
+                io.printError(e.getMessage());
+            }
         }
-        System.out.println(result);
+    }
+
+    private String getCityFromUser() {
+        return io.readString("City: ").trim();
     }
 
 }

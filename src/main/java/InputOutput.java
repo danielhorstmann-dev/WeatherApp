@@ -10,6 +10,12 @@ public class InputOutput {
     }
 
     public void printError(String errorString) {
-        System.err.println(errorString);
+        System.err.println("[ERROR] " + errorString);
+        scanner.nextLine();
+    }
+
+    public void printWeather(String city, int temperature, String description) {
+        System.out.println("Temperature in " + city + ": " + temperature + " °C");
+        System.out.println("Description: " + description);
     }
 }
