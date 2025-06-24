@@ -8,6 +8,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class WeatherService {
 
@@ -21,20 +22,24 @@ public class WeatherService {
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        if (response.statusCode() != 200) return Optional.empty();
+        if (WeatherFailureCodes.isFailureCode(response.statusCode())) {
+            Consumer<String> errorTextConsumer = InputOutput::printError;
+            errorTextConsumer.accept(new ObjectMapper().readTree(response.body()).get("message").asText());
+            return Optional.empty();
+        }
 
         return parseWeather(response.body());
     }
 
     public Optional<WeatherData> parseWeather(String responseBody) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonNode = mapper.readTree(responseBody);
+        JsonNode jsonNode = new ObjectMapper().readTree(responseBody);
 
         double temperature = jsonNode.get("main").get("temp").asDouble();
         String description = jsonNode.get("weather").get(0).get("description").asText();
         String clouds = jsonNode.get("weather").get(0).get("main").asText();
         int cloudsPercent = jsonNode.get("clouds").get("all").asInt();
         double windSpeed = jsonNode.get("wind").get("speed").asDouble();
+
         return Optional.of(new WeatherData(temperature, description, clouds, cloudsPercent, windSpeed));
     }
 }

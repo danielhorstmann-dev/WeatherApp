@@ -18,18 +18,13 @@ public class WeatherAppController {
 
             try {
                 Optional<WeatherData> dataOpt = weatherService.fetchWeather(cityFormatted);
-                if (dataOpt.isPresent()) {
-                    WeatherData data = dataOpt.get();
-                    io.printWeather(city, data.currentTemperature(), data.description(), data.clouds(), data.cloudPercent(), data.windSpeed());
-                } else {
-                    io.printError("City not found.");
-                }
+                dataOpt.ifPresent(data -> io.printWeather(city, data.currentTemperature(), data.description(), data.clouds(), data.cloudPercent(), data.windSpeed()));
             } catch (JsonProcessingException e) {
-                io.printError("Error to read Json");
-                io.printError(e.getMessage());
+                InputOutput.printError("Error to read Json");
+                InputOutput.printError(e.getMessage());
             } catch (IOException | InterruptedException e) {
-                io.printError("Server does not respond");
-                io.printError(e.getMessage());
+                InputOutput.printError("Server does not respond");
+                InputOutput.printError(e.getMessage());
             }
         }
     }

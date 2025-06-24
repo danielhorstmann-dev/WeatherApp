@@ -6,13 +6,13 @@ public class InputOutput {
     private final Scanner scanner = new Scanner(System.in);
 
     public String readString(String prompt) {
+        System.out.println();
         System.out.print(prompt);
         return scanner.nextLine();
     }
 
-    public void printError(String errorString) {
+    public static void printError(String errorString) {
         System.err.println("[ERROR] " + errorString);
-        scanner.nextLine();
     }
 
     public void printWeather(String city, double currentTemperature, String description, String clouds, int cloudPercent, double windSpeed) {
