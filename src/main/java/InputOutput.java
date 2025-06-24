@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.Scanner;
 
 public class InputOutput {
@@ -10,6 +11,20 @@ public class InputOutput {
     }
 
     public void printError(String errorString) {
-        System.err.println(errorString);
+        System.err.println("[ERROR] " + errorString);
+        scanner.nextLine();
+    }
+
+    public void printWeather(String city, double currentTemperature, String description, String clouds, int cloudPercent, double windSpeed) {
+        DecimalFormat df = new DecimalFormat("#.0");
+        System.out.println("City: " + city);
+        System.out.println("Current temperature: " + df.format(currentTemperature) + " °C");
+        System.out.println("Description: " + description);
+        if (clouds.equals("Clouds")) {
+            System.out.println(clouds + ": " + cloudPercent + "%");
+        } else {
+            System.out.println(clouds);
+        }
+        System.out.println("Wind speed: " + df.format((windSpeed/1000)*60*60) + " km/h");
     }
 }
